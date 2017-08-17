@@ -350,9 +350,12 @@ void computeDeltas_Siddon(Geometry geo, float alpha,int i, Point3D* uvorigin, Po
     //End point
     Point3D P,Pu0,Pv0;
     
+    
+    //NOTE: the .x are replaced after, but are left here for clarity of concept. This takes not computational time
     P.x  =-(geo.DSD-geo.DSO);   P.y  = geo.dDetecU*(0-((float)geo.nDetecU/2)+0.5);       P.z  = geo.dDetecV*(((float)geo.nDetecV/2)-0.5-0);
     Pu0.x=-(geo.DSD-geo.DSO);   Pu0.y= geo.dDetecU*(1-((float)geo.nDetecU/2)+0.5);       Pu0.z= geo.dDetecV*(((float)geo.nDetecV/2)-0.5-0);
     Pv0.x=-(geo.DSD-geo.DSO);   Pv0.y= geo.dDetecU*(0-((float)geo.nDetecU/2)+0.5);       Pv0.z= geo.dDetecV*(((float)geo.nDetecV/2)-0.5-1);
+    
     // Geomtric trasnformations:
     // Now we have the Real world (OXYZ) coordinates of the bottom corner and its two neighbours.
     // The obkjective is to get a position of the detector in a coordinate system where:
@@ -364,21 +367,13 @@ void computeDeltas_Siddon(Geometry geo, float alpha,int i, Point3D* uvorigin, Po
     // (in new xyz) does the voxels change when and index is added". To do that
     // several geometric steps needs to be changed
     
-    //1.Roll,pitch,jaw
-    // The detector can have a small rotation.
-    // according to
-    //"A geometric calibration method for cone beam CT systems" Yang K1, Kwan AL, Miller DF, Boone JM. Med Phys. 2006 Jun;33(6):1695-706.
-    // Only the Z rotation will have a big influence in the image quality when they are small.
-    // Still all rotations are supported
+    
     
     // To roll pitch jaw, the detector has to be in centered in OXYZ.
     P.x=0;Pu0.x=0;Pv0.x=0;
     
-    // Roll pitch yaw
-    rollPitchYaw(geo,i,&P);
-    rollPitchYaw(geo,i,&Pu0);
-    rollPitchYaw(geo,i,&Pv0);
-    //Now ltes translate the points where they shoudl be:
+
+    //Now lets translate the points where they should be:
     P.x=P.x-(geo.DSD-geo.DSO);
     Pu0.x=Pu0.x-(geo.DSD-geo.DSO);
     Pv0.x=Pv0.x-(geo.DSD-geo.DSO);
@@ -391,6 +386,16 @@ void computeDeltas_Siddon(Geometry geo, float alpha,int i, Point3D* uvorigin, Po
     Pv0.y=Pv0.y+geo.offDetecU[i];    Pv0.z=Pv0.z+geo.offDetecV[i];
     //S doesnt need to chagne
     
+    // Roll,pitch,jaw
+    // The detector can have a small rotation.
+    // according to
+    //"A geometric calibration method for cone beam CT systems" Yang K1, Kwan AL, Miller DF, Boone JM. Med Phys. 2006 Jun;33(6):1695-706.
+    // Only the Z rotation will have a big influence in the image quality when they are small.
+    // Still all rotations are supported
+    // Roll pitch yaw
+    rollPitchYaw(geo,i,&P);
+    rollPitchYaw(geo,i,&Pu0);
+    rollPitchYaw(geo,i,&Pv0);
     
     //3: Rotate (around z)!
     Point3D Pfinal, Pfinalu0, Pfinalv0;

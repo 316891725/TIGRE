@@ -498,12 +498,7 @@ void computeDeltasCube(Geometry geo, float alpha,int i, Point3D* xyzorigin, Poin
     Py.x=Py0.x*cos(alpha)-Py0.y*sin(alpha);       Py.y=Py0.x*sin(alpha)+Py0.y*cos(alpha);      Py.z=Py0.z;
     Pz.x=Pz0.x*cos(alpha)-Pz0.y*sin(alpha);       Pz.y=Pz0.x*sin(alpha)+Pz0.y*cos(alpha);      Pz.z=Pz0.z;
     
-    //detector offset
-    P.z =P.z-geo.offDetecV[i];          P.y =P.y-geo.offDetecU[i];
-    Px.z =Px.z-geo.offDetecV[i];          Px.y =Px.y-geo.offDetecU[i];
-    Py.z =Py.z-geo.offDetecV[i];          Py.y =Py.y-geo.offDetecU[i];
-    Pz.z =Pz.z-geo.offDetecV[i];          Pz.y =Pz.y-geo.offDetecU[i];
-    //Detector Roll pitch Yaw
+     //Detector Roll pitch Yaw
     //
     //
     // first, we need to offset everything so (0,0,0) is the center of the detector
@@ -516,26 +511,35 @@ void computeDeltasCube(Geometry geo, float alpha,int i, Point3D* xyzorigin, Poin
     rollPitchYawT(geo,i,&Px);
     rollPitchYawT(geo,i,&Py);
     rollPitchYawT(geo,i,&Pz);
-    
+//     
     P.x=P.x-(geo.DSD-geo.DSO);
     Px.x=Px.x-(geo.DSD-geo.DSO);
     Py.x=Py.x-(geo.DSD-geo.DSO);
     Pz.x=Pz.x-(geo.DSD-geo.DSO);
     //Done for P, now source
     
-    source.x=geo.DSD; //allready offseted for rotation of teh detector
-    source.y=-geo.offDetecU[i];
-    source.z=-geo.offDetecV[i];
+    source.x=geo.DSD; //allready offseted for rotation
+    source.y=0;//-geo.offDetecU[i];
+    source.z=0;//-geo.offDetecV[i];
     rollPitchYawT(geo,i,&source);
     
-    source.x=source.x-(geo.DSD-geo.DSO);
     
+    source.x=source.x-(geo.DSD-geo.DSO);//   source.y=source.y-auxOff.y;    source.z=source.z-auxOff.z;
+    source.y=source.y-geo.offDetecU[i]; source.z=source.z-geo.offDetecV[i];
     // Scale coords so detector pixels are 1x1
+      
+      //detector offset
+    P.z =P.z-geo.offDetecV[i];            P.y =P.y-geo.offDetecU[i];
+    Px.z =Px.z-geo.offDetecV[i];          Px.y =Px.y-geo.offDetecU[i];
+    Py.z =Py.z-geo.offDetecV[i];          Py.y =Py.y-geo.offDetecU[i];
+    Pz.z =Pz.z-geo.offDetecV[i];          Pz.y =Pz.y-geo.offDetecU[i];
+    
     
     P.z =P.z /geo.dDetecV;                          P.y =P.y/geo.dDetecU;
     Px.z=Px.z/geo.dDetecV;                          Px.y=Px.y/geo.dDetecU;
     Py.z=Py.z/geo.dDetecV;                          Py.y=Py.y/geo.dDetecU;
     Pz.z=Pz.z/geo.dDetecV;                          Pz.y=Pz.y/geo.dDetecU;
+    
     source.z=source.z/geo.dDetecV;                  source.y=source.y/geo.dDetecU;
     // get deltas of the changes in voxels
     deltaX->x=Px.x-P.x;   deltaX->y=Px.y-P.y;    deltaX->z=Px.z-P.z;
